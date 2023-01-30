@@ -4,7 +4,7 @@
 #
 # -------------------------------------------------------------------------------------------------
 import turtle
-
+import sys 
 from import_helper import dynamic_import
 obstacles =  dynamic_import(None)
 

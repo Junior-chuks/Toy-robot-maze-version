@@ -1,6 +1,15 @@
 import heapq
+import sys
 from import_helper import dynamic_import
-from world.turtle import world
+
+
+if  len(sys.argv) == (3) or (len(sys.argv) == (2) and sys.argv[-1] != "text" ):
+    if sys.argv[-1] == "turtle" or sys.argv[1] == "turtle" :
+        from world.turtle import world
+else:
+    from world.text import world
+
+
 # imports the correct module according to the user's input
 b = dynamic_import(None)
 
@@ -130,12 +139,11 @@ def get_end_point(direct):
     
 
 # Function finds the shortest path
-def solve_maze_path(path,end):
-    for pair in path:
-        continue
-
-    for i in path:
+def solve_maze_path(path,end,direc):
     
+    for i in path:
+        
+        world.t.setheading(90)
         world.t.shape("turtle")
         world.t.shapesize(0.3)
         world.t.speed(1)
@@ -146,13 +154,165 @@ def solve_maze_path(path,end):
             world.t.penup()
         else:world.t.pendown()
         world.t.goto(i)
-        
+        world.position_x ,world.position_y = i
+
+    if direc == "left" :
+        world.t.left(90)
+        world.current_direction_index -= 1
+        if world.current_direction_index < 0:
+            world.current_direction_index = 3
+
+    elif direc == "right":
+        world.t.right(90)
+        world.current_direction_index += 1
+        if world.current_direction_index > 3:
+            world.current_direction_index = 0
+
+    for m in range(2):
+        if direc == "bottom":
+            world.t.left(90)
+            world.current_direction_index += 1
+            if world.current_direction_index > 3:
+                world.current_direction_index = 0
+    
+
+def solve_maze_path_text_v(name,path,end):
+    for pair in path:
+        continue
+
+    x,y=0,0
+    n = "N"
+    q = 0
+    no_steps = 0
+
+
+    for i in path:
+    
+        if i[0] < x  and i[1] == y and n == "N" and q == 0:
+            do_left_turn(name)
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            n = "W"
+            q -=1
+            no_steps = 0
+                    
+        elif i[0] > x and i[1] == y and n == "N" and q == 0:
+            do_right_turn(name)
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            n = "E"
+            q+=1
+            no_steps = 0
+
+        elif i[1] < y and i[0] == x and n == "E" and q == 1:
+            do_right_turn(name)
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            n = "S"
+            q += 1
+            no_steps = 0
+
+        elif i[1] > y and i[0] == x and n == "E" and  q == 1:
+            do_left_turn(name)
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            n = "N"
+            q-=1
+            no_steps = 0
+
+        elif i[1] > y and i[0] == x and n == "W" and (q == -1 or q == 3 ):
+            do_right_turn(name)
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            n = "N"
+            q+=1
+            no_steps = 0
+
+        elif i[1] < y and i[0] == x and n == "W" and (q == -1 or q == 3 ) :
+            do_left_turn(name)
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            n = "S"
+            q -=1
+            no_steps = 0
+
+        elif i[0] > x  and i[1] == y and n == "S" and (q == 2 or q == -3):
+            do_left_turn(name)
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            n = "E"
+            q-=1
+            no_steps = 0
+                    
+        elif i[0] < x and i[1] == y and n == "S" and (q == 2 or q == 3):
+            do_right_turn(name)
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            n = "W"
+            q+=1
+            no_steps = 0
+
+        else:
+            no_steps +=1
+
+        x,y = i
+
+        world.position_x = x
+        world.position_y = y
+
+        if  x == end[0] and y == end[1]:
+            print(' > '+name+' moved forward by '+str(no_steps*5)+' steps.')
+            world.show_position(name,"","","")
+            print(''+name+': Sorry, I cannot go outside my safe zone.')
+
+
+def do_left_turn(robot_name):
+    """
+    Do a 90 degree turn to the left
+    :param robot_name:
+    :return: (True, left turn output text)
+    """
+
+    world.current_direction_index -= 1
+    if world.current_direction_index < 0:
+        world.current_direction_index = 3
+
+    print(' > '+robot_name+' turned left.')
+
+
+def do_right_turn(robot_name):
+    """
+    Do a 90 degree turn to the right
+    :param robot_name:
+    :return: (True, right turn output text)
+    """
+
+    world.current_direction_index += 1
+    if world.current_direction_index > 3:
+        world.current_direction_index = 0
+
+    print(' > '+robot_name+' turned right.')
+
 
 # Function follows the exact path to the end   
 def follow_path(name,direction):
 
-    print("> "+name+" starting maze run..")
+    print(" > "+name+" starting maze run..")
     path ,end ,text = get_shortest_path(direction)
-    solve_maze_path(path,end)
+    if  len(sys.argv) == (3) or (len(sys.argv) == (2) and sys.argv[-1] != "text" ):
+        if sys.argv[-1] == "turtle" or sys.argv[1] == "turtle" :
+            solve_maze_path(path,end,direction)
+            
+    else:
+        solve_maze_path_text_v(name,path,end)
     return True,text
-        
+
+
+if __name__ == "__main__":
+    paths ,end ,text = get_shortest_path("left")
+    solve_maze_path(paths,end,"left")
+    paths ,end ,text = get_shortest_path("bottom")
+    solve_maze_path(paths,end,"bottom")
+    paths ,end ,text = get_shortest_path("top")
+    solve_maze_path(paths,end,"top")
+    # print(paths)

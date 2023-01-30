@@ -18,3 +18,4 @@ def dynamic_import(name):
     else:
         name = "maze.obstacles"
         return import_module(name)
+    return import_module("maze.obstacles")

@@ -13,7 +13,7 @@ argument_lis = sys.argv
 obstacles = dynamic_import(None)
 
 
-if len(argument_lis) == 2 or len(argument_lis)== 3 and "turtle" == argument_lis[1]:
+if (len(argument_lis) == 2 or len(argument_lis)== 3) and ("turtle" == argument_lis[1] or "turtle" == argument_lis[-1]):
     from world.turtle import world
 else:
     from world.text import world
