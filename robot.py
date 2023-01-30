@@ -127,7 +127,7 @@ def output(name, message,n):
     """
     
     print(''+name+": "+message)
-    if len(argument_lis) == 3 and n == 0:
+    if len(argument_lis) == 3 and n == 0 :
         print(name+": Loaded "+argument_lis[-1])
     else:
         if n == 0:
@@ -321,6 +321,7 @@ def handle_command(robot_name, command):
     (command_name, arg) = split_command_input(command)
 
     if command_name == 'off':
+        output(robot_name,"Shutting down..",1)
         return False
     else:
         (do_next, command_output) = call_command(command_name, arg, robot_name)
